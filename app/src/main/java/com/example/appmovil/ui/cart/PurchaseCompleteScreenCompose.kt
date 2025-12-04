@@ -8,21 +8,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.appmovil.data.SessionManager
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 
-data class PurchaseData(
+// ✅ Clase con userId incluida
+data class PurchaseInfo(
     val total: String,
     val products: List<String>,
-    val location: LatLng
+    val location: LatLng,
+    val userId: String
 )
 
 @Composable
 fun PurchaseCompleteScreenCompose(
     navController: NavController,
-    purchase: PurchaseData
+    purchase: PurchaseInfo,
+    session: SessionManager // 🔹 pasamos session para acceder a datos del usuario
 ) {
     val scrollState = rememberScrollState()
 
@@ -33,14 +37,33 @@ fun PurchaseCompleteScreenCompose(
             .build()
     }
 
+    // Obtenemos datos del usuario desde session
+    val userName = session.getName()
+    val userAddress = session.getAddress()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
+        // 🧑 Usuario
+        if (!userName.isNullOrEmpty()) {
+            Text(
+                "Nombre: $userName",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+        if (!userAddress.isNullOrEmpty()) {
+            Text(
+                "Dirección: $userAddress",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
-        // 🧾 Total pagado
+        // 💰 Total pagado
         Text(
             "Último total pagado: ${purchase.total}",
             style = MaterialTheme.typography.titleMedium
@@ -48,12 +71,11 @@ fun PurchaseCompleteScreenCompose(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 🛍 Lista de productos comprados
+        // 🛍 Productos
         Text(
             "Productos comprados:",
             style = MaterialTheme.typography.titleMedium
         )
-
         Spacer(modifier = Modifier.height(4.dp))
 
         purchase.products.forEach { product ->
@@ -68,14 +90,11 @@ fun PurchaseCompleteScreenCompose(
                 .fillMaxWidth()
                 .height(300.dp)
         ) {
-            GoogleMap(
-                cameraPositionState = cameraPositionState
-            )
+            GoogleMap(cameraPositionState = cameraPositionState)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🔙 Botón volver al home
         Button(
             onClick = {
                 navController.navigate("home") {

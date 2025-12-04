@@ -91,14 +91,13 @@ fun CartScreenCompose(
                     return@Button
                 }
 
-                // 🔥 Codificar la info para enviarla por navegación
                 val raw = items.joinToString("|") {
                     "${it.product.name};${it.quantity};${it.product.price}"
                 }
 
                 val encoded = URLEncoder.encode(raw, StandardCharsets.UTF_8.toString())
 
-                navController.navigate("orderSummary/$total/$encoded")
+                navController.navigate("orderSummary/$total/$encoded/$userId")
             },
             modifier = Modifier.fillMaxWidth()
         ) {

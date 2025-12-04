@@ -1,68 +1,78 @@
 package com.example.appmovil.ui.cart
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.net.URLDecoder
 
 @Composable
 fun OrderSummaryScreen(
     navController: NavController,
-    total: String,
-    productsEncoded: String
+    total: String,                 // 🔹 String
+    productsEncoded: String,
+    userId: String
 ) {
-    val decodedProducts = URLDecoder.decode(productsEncoded, StandardCharsets.UTF_8.toString())
-    val productsList = if (decodedProducts.isNotEmpty()) {
-        decodedProducts.split("|")
-    } else emptyList()
+    val productsDecoded = URLDecoder.decode(productsEncoded, StandardCharsets.UTF_8.toString())
+    val products = productsDecoded.split("|").map {
+        val parts = it.split(";")
+        val name = parts.getOrNull(0) ?: ""
+        val qty = parts.getOrNull(1) ?: "0"
+        val price = parts.getOrNull(2) ?: "0.0"
+        Triple(name, qty, price)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(20.dp)
     ) {
+        Text("Resumen de la Compra")
 
-        Text("Resumen de compra", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Lista de productos
-        productsList.forEach { item ->
-            Text(text = "- $item")
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text("Total a pagar: $$total", style = MaterialTheme.typography.headlineSmall)
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        Button(
-            onClick = {
-                val encodedProducts =
-                    URLEncoder.encode(productsList.joinToString("|"), StandardCharsets.UTF_8.toString())
-
-                navController.navigate("purchase_complete/$total/$encodedProducts")
-            },
-            modifier = Modifier.fillMaxWidth()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
-            Text("Confirmar compra")
+            items(products) { (name, qty, price) ->
+                Text(
+                    text = "$name x$qty — $${qty.toInt() * price.toDouble()}",
+                    modifier = Modifier.padding(6.dp)
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = "Total: $total",
+            modifier = Modifier.padding(vertical = 10.dp)
+        )
 
-        OutlinedButton(
+        // 🔙 Volver
+        Button(
             onClick = { navController.popBackStack() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Volver")
+            Text("← Volver")
+        }
+
+        // 🟢 Finalizar compra
+        Button(
+            onClick = {
+                val namesRaw = products.joinToString("|") { it.first }
+                val namesEncoded = URLEncoder.encode(namesRaw, StandardCharsets.UTF_8.toString())
+                navController.navigate("purchase_complete/$total/$namesEncoded/$userId")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+        ) {
+            Text("Finalizar compra")
         }
     }
 }
