@@ -10,7 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.appmovil.data.SessionManager
-import com.example.appmovil.ui.cart.*
+import com.example.appmovil.ui.cart.CartScreenCompose
+import com.example.appmovil.ui.cart.OrderSummaryScreen
+import com.example.appmovil.ui.cart.PurchaseCompleteScreenCompose
+import com.example.appmovil.ui.cart.PurchaseInfo
+import com.example.appmovil.ui.cart.OrderHistoryScreen
 import com.example.appmovil.ui.detail.ProductDetailScreenCompose
 import com.example.appmovil.ui.detail.ProductDetailViewModel
 import com.example.appmovil.ui.home.HomeScreenCompose
@@ -182,15 +186,8 @@ class MainActivity : ComponentActivity() {
 
                     // ORDER HISTORY
                     composable("orderHistory") {
-                        val orders = listOf(
-                            OrderHistoryItem("Pedido #1", listOf("Producto A", "Producto B"), "$120.000"),
-                            OrderHistoryItem("Pedido #2", listOf("Producto C"), "$85.500"),
-                            OrderHistoryItem("Pedido #3", listOf("Producto D", "Producto E"), "$45.750")
-                        )
                         OrderHistoryScreen(
-                            orders = orders,
-                            userName = session.getName() ?: "Invitado",
-                            userAddress = session.getAddress() ?: "",
+                            session = session,
                             onBack = { navController.popBackStack() }
                         )
                     }

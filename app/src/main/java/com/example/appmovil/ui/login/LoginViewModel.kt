@@ -1,6 +1,5 @@
 package com.example.appmovil.ui.login
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.appmovil.data.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,7 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 data class LoginUiState(
     val email: String = "",
-    val password: String = ""
+    val password: String = "",
+    val errorMessage: String? = null
 )
 
 class LoginViewModel(private val session: SessionManager) : ViewModel() {
@@ -17,18 +17,29 @@ class LoginViewModel(private val session: SessionManager) : ViewModel() {
     val uiState: StateFlow<LoginUiState> = _uiState
 
     fun onEmailChanged(value: String) {
-        _uiState.value = _uiState.value.copy(email = value)
+        _uiState.value = _uiState.value.copy(email = value, errorMessage = null)
     }
 
     fun onPasswordChanged(value: String) {
-        _uiState.value = _uiState.value.copy(password = value)
+        _uiState.value = _uiState.value.copy(password = value, errorMessage = null)
     }
 
     fun login(): Boolean {
-        val savedEmail = session.getEmail()
-        val savedPass = session.getPassword()
+        val state = _uiState.value
 
-        return (_uiState.value.email == savedEmail &&
-                _uiState.value.password == savedPass)
+        val savedEmail: String? = session.getEmail()
+        val savedPassword: String? = session.getPassword()
+
+        if (state.email.isBlank() || state.password.isBlank()) {
+            _uiState.value = state.copy(errorMessage = "Todos los campos son obligatorios")
+            return false
+        }
+
+        return if (state.email == savedEmail && state.password == savedPassword) {
+            true
+        } else {
+            _uiState.value = state.copy(errorMessage = "Correo o contraseña incorrectos")
+            false
+        }
     }
 }

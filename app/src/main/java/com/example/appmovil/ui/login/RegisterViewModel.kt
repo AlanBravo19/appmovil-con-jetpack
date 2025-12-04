@@ -37,17 +37,17 @@ class RegisterViewModel(private val session: SessionManager) : ViewModel() {
     fun register(): Boolean {
         val state = _uiState.value
 
+        if (state.name.isBlank() || state.email.isBlank() || state.password.isBlank() || state.confirm.isBlank()) {
+            _uiState.value = state.copy(errorMessage = "Todos los campos son obligatorios")
+            return false
+        }
+
         if (state.password != state.confirm) {
             _uiState.value = state.copy(errorMessage = "Las contraseñas no coinciden")
             return false
         }
 
-        if (state.email.isBlank() || state.name.isBlank()) {
-            _uiState.value = state.copy(errorMessage = "Todos los campos son obligatorios")
-            return false
-        }
-
-        // Guardar usuario
+        // Guardamos usuario
         session.saveUser(
             name = state.name,
             email = state.email,
