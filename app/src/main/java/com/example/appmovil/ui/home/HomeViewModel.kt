@@ -16,7 +16,7 @@ class HomeViewModel : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> = _products
 
-    private val jsonUrl = "https://pastebin.com/raw/xANwEfGQ"
+    private val jsonUrl = "https://raw.githubusercontent.com/AlanBravo19/appmovil-con-jetpack/refs/heads/main/productos.json"
 
     init {
         loadProducts()
