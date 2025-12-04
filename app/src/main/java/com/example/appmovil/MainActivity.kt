@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -32,6 +31,7 @@ import com.example.appmovil.ui.detail.ProductDetailViewModel
 
 import com.example.appmovil.ui.cart.CartScreenCompose
 import com.example.appmovil.ui.ui.domain.model.Product
+import com.example.appmovil.ui.theme.AppMovilTheme   // ← AQUI USAMOS TU TEMA VERDE
 
 class MainActivity : ComponentActivity() {
 
@@ -40,7 +40,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            MaterialTheme {
+            // ============ USAMOS EL TEMA VERDE PERSONALIZADO ============
+            AppMovilTheme {
 
                 val navController = rememberNavController()
                 val session = SessionManager(this)
@@ -112,7 +113,7 @@ class MainActivity : ComponentActivity() {
                             },
 
                             onHistoryClick = {
-                                // Próximo paso
+                                // Próxima pantalla
                             },
 
                             onUserClick = {
@@ -122,7 +123,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // ============================================
-                    // PERFIL DEL USUARIO (MVVM)
+                    // PERFIL DEL USUARIO
                     // ============================================
                     composable("profile") {
 
